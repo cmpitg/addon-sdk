@@ -10,13 +10,13 @@ The `tabs` module provides easy access to tabs and tab-related events.
 The module itself can be used like a basic list of all opened
 tabs across all windows. In particular, you can enumerate it:
 
-    var tabs = require('tabs');
+    var tabs = require('sdk/tabs');
     for each (var tab in tabs)
       console.log(tab.title);
 
 You can also access individual tabs by index:
 
-    var tabs = require('tabs');
+    var tabs = require('sdk/tabs');
 
     tabs.on('ready', function () {
       console.log('first: ' + tabs[0].title);
@@ -25,13 +25,13 @@ You can also access individual tabs by index:
 
 You can open a new tab, specifying various properties including location:
 
-    var tabs = require("tabs");
+    var tabs = require("sdk/tabs");
     tabs.open("http://www.example.com");
 
 You can register event listeners to be notified when tabs open, close, finish
 loading DOM content, or are made active or inactive:
 
-    var tabs = require("tabs");
+    var tabs = require("sdk/tabs");
 
     // Listen for tab openings.
     tabs.on('open', function onOpen(tab) {
@@ -48,7 +48,7 @@ You can get and set various properties of tabs (but note that properties
 values until after the tab's `ready` event fires). By setting the `url`
 property you can load a new page in the tab:
 
-    var tabs = require("tabs");
+    var tabs = require("sdk/tabs");
     tabs.on('activate', function(tab) {
       tab.url = "http://www.example.com";
     });
@@ -57,7 +57,7 @@ You can attach a [content script](dev-guide/guides/content-scripts/index.html)
 to the page hosted in a tab, and use that to access and manipulate the page's
 content:
 
-    var tabs = require("tabs");
+    var tabs = require("sdk/tabs");
 
     tabs.on('activate', function(tab) {
       tab.attach({
@@ -68,6 +68,18 @@ content:
       });
     });
 
+## Private Windows ##
+
+If your add-on has not opted into private browsing, then you won't see any
+tabs that are hosted by private browser windows.
+
+Tabs hosted by private browser windows won't be seen if you enumerate the
+`tabs` module itself, and you won't receive any events for them.
+
+To learn more about private windows, how to opt into private browsing, and how
+to support private browsing, refer to the
+[documentation for the `private-browsing` module](modules/sdk/private-browsing.html).
+
 <api name="activeTab">
 @property {Tab}
 
@@ -77,7 +89,7 @@ activate a `Tab` object, call its `activate` method.
 **Example**
 
     // Get the active tab's title.
-    var tabs = require("tabs");
+    var tabs = require("sdk/tabs");
     console.log("title of active tab is " + tabs.activeTab.title);
 </api>
 
@@ -93,7 +105,7 @@ depending on the `inNewWindow` option.
 
 **Example**
 
-    var tabs = require("tabs");
+    var tabs = require("sdk/tabs");
 
     // Open a new tab on active window and make tab active.
     tabs.open("http://www.mysite.com");
@@ -138,6 +150,11 @@ opened in the first tab in that window. This is an optional property.
 @prop [inBackground] {boolean}
 If present and true, the new tab will be opened to the right of the active tab
 and will not be active. This is an optional property.
+
+@prop isPrivate {boolean}
+Boolean which will determine whether the new tab should be private or not.
+If your add-on does not support private browsing this will have no effect.
+See the [private-browsing](modules/sdk/private-browsing.html) documentation for more information.
 
 @prop [isPinned] {boolean}
 If present and true, then the new tab will be pinned as an
@@ -258,7 +275,7 @@ Returns thumbnail data URI of the page currently loaded in this tab.
 
 **Example**
 
-    var tabs = require("tabs");
+    var tabs = require("sdk/tabs");
 
     tabs.on('ready', function(tab) {
       tab.attach({
@@ -346,7 +363,7 @@ Properties relating to the tab's content (for example: `title`, `favicon`,
 and `url`) will not be correct at this point. If you need to access these
 properties, listen for the `ready` event:
 
-    var tabs = require("tabs");
+    var tabs = require("sdk/tabs");
     tabs.on('open', function(tab){
       tab.on('ready', function(tab){
         console.log(tab.url);
